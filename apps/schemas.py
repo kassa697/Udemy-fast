@@ -2,6 +2,7 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
+# this class is used to define the status of a shipment
 class ShipmentStatus(str, Enum):
     placed = "placed"
     in_transit = "in_transit"
@@ -9,6 +10,7 @@ class ShipmentStatus(str, Enum):
     delivered = "delivered"
 
 
+# this class is used to define the base shipment model
 class BaseShipment(BaseModel):
     content: str
     weight: float = Field(le=25)
@@ -19,8 +21,14 @@ class ShipmentRead(BaseShipment):
     status: ShipmentStatus
 
 
+class Order(BaseModel):
+    price: int
+    title: str
+    description: str
+
+
 class ShipmentCreate(BaseShipment):
-    pass
+    order: Order
 
 
 class ShipmentUpdate(BaseModel):
