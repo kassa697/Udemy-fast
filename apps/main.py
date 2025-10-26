@@ -1,80 +1,94 @@
-from typing import Any
 from fastapi import FastAPI, HTTPException, status
 from scalar_fastapi import get_scalar_api_reference
 
+from .schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
+
+
 app = FastAPI()
 
+### Shipments datastore as dict
 shipments = {
-    123: {
-        "weight": 10.2,
-        "content": "wooden table",
-        "status": "in transit",
+    12701: {
+        "weight": 8.2,
+        "content": "aluminum sheets",
+        "status": "placed",
+        "destination": 11002,
     },
-    456: {
-        "weight": 5.5,
-        "content": "metal chair",
+    12702: {
+        "weight": 14.7,
+        "content": "steel rods",
+        "status": "shipped",
+        "destination": 11003,
+    },
+    12703: {
+        "weight": 11.4,
+        "content": "copper wires",
         "status": "delivered",
+        "destination": 11002,
     },
-    789: {
-        "weight": 2.3,
-        "content": "plastic cup",
-        "status": "pending",
-    },
-    101: {
-        "weight": 3.1,
-        "content": "glass vase",
-        "status": "cancelled",
-    },
-    202: {
-        "weight": 15.6,
-        "content": "leather sofa",
+    12704: {
+        "weight": 17.8,
+        "content": "iron plates",
         "status": "in transit",
+        "destination": 11005,
     },
-    303: {
-        "weight": 1.2,
-        "content": "ceramic bowl",
-        "status": "delivered",
+    12705: {
+        "weight": 10.3,
+        "content": "brass fittings",
+        "status": "returned",
+        "destination": 11008,
     },
 }
 
 
-@app.get("/shipment")
-def get_shipment(id: int | None = None) -> dict[str, Any]:
+###  a shipment by id
+@app.get("/shipment", response_model=ShipmentRead)
+def get_shipment(id: int):
+    # Check for shipment with given id
     if id not in shipments:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="指定したIDは存在しません"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Given id doesn't exist!",
         )
+
     return shipments[id]
 
 
-@app.post("/shipment")
-def submit_shipment(weight: float, data: dict[str, Any]) -> dict[str, int]:
-    content = data["content"]
-
-    if data["weight"] > 25:
-        raise HTTPException(
-            status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="重量が上限を超えています",
-        )
+### Create a new shipment with content and weight
+@app.post("/shipment", response_model=None)
+def submit_shipment(shipment: ShipmentCreate) -> dict[str, int]:
+    # Create and assign shipment a new id
     new_id = max(shipments.keys()) + 1
-
+    # Add to shipments dict
     shipments[new_id] = {
-        "content": content,
-        "weight": weight,
+        **shipment.model_dump(),
         "status": "placed",
     }
-
+    # Return id for later use
     return {"id": new_id}
 
 
-# scalar fastapi document
+### Update fields of a shipment
+@app.patch("/shipment", response_model=ShipmentRead)
+def update_shipment(id: int, body: ShipmentUpdate):
+    # Update data with given fields
+    shipments[id].update(body.model_dump(exclude_none=True))
+    return shipments[id]
+
+
+### Delete a shipment by id
+@app.delete("/shipment")
+def delete_shipment(id: int) -> dict[str, str]:
+    # Remove from datastore
+    shipments.pop(id)
+
+    return {"detail": f"Shipment with id #{id} is deleted!"}
+
+
+### Scalar API Documentation
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
-    return get_scalar_api_reference(openapi_url=app.openapi_url, title="Scalar FastAPI")
-
-
-# # memo: パスの順番は重量。もし{id}を先に指定するとlatestが読まれない。
-# @app.get("/shipment/latest")
-# def get_latest_shipment() -> dict[str, Any]:
-#     id = max(shipments.keys())
-#     return shipments[id]
+    return get_scalar_api_reference(
+        openapi_url=app.openapi_url,
+        title="Scalar API",
+    )
