@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
+class DatabaseSettings(BaseSettings):
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
     POSTGRES_USER: str
@@ -9,17 +9,14 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
 
     model_config = SettingsConfigDict(
-        # env_igonreは空の環境変数を無視する
-        env_file="../.env",
+        env_file="./.env",
         env_ignore_empty=True,
         extra="ignore",
     )
 
-    def POSTGRES_URL(self) -> str:
-        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+    @property
+    def POSTGRES_URL(self):
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
-settings = Settings()
-res = settings.POSTGRES_URL()
-
-print(res)
+settings = DatabaseSettings()
