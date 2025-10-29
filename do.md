@@ -15,6 +15,12 @@ fastapi dev
 # scalar_fastapiはAPIドキュメント&SwaggerUIで使う
 pip install scalar_fastapi
 
+# sqlmodelはDBのORMで使う
+pip install sqlmodel
+
+# pydantic-settingsは環境変数から設定を読み込むためのライブラリ
+pip install pydantic-settings
+
 ```
 
 ## メモ

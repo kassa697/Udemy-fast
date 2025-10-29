@@ -2,3 +2,5 @@
 .mypy_cache
 __pycache__
 apps/__pycache__
+apps/sqlite.db
+.env
