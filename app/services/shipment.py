@@ -12,7 +12,7 @@ class ShipmentService:
         self.session = session
 
     # Get a shipment by id
-    async def get(self, id: int) -> Shipment:
+    async def get(self, id: int) -> Shipment | None:
         return await self.session.get(Shipment, id)
 
     # Add a new shipment
@@ -29,7 +29,7 @@ class ShipmentService:
         return new_shipment
 
     # Update an existing shipment
-    async def update(self, id: int, shipment_update: dict) -> Shipment:
+    async def update(self, id: int, shipment_update: dict) -> Shipment | None:
         shipment = await self.get(id)
         shipment.sqlmodel_update(shipment_update)
 
