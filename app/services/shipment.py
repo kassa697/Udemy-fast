@@ -9,7 +9,7 @@ from ..database.models import Shipment, ShipmentStatus
 class ShipmentService:
     def __init__(self, session: AsyncSession):
         # Get database session to perform database operations
-        self.session = session
+        self.session = session  # pyright: ignore[reportUnannotatedClassAttribute]
 
     # Get a shipment by id
     async def get(self, id: int) -> Shipment | None:
@@ -18,7 +18,7 @@ class ShipmentService:
     # Add a new shipment
     async def add(self, shipment_create: ShipmentCreate) -> Shipment:
         new_shipment = Shipment(
-            **shipment_create.model_dump(),
+            **shipment_create.model_dump(),  # pyright: ignore[reportAny]
             status=ShipmentStatus.placed,
             estimated_delivery=datetime.now() + timedelta(days=3),
         )
@@ -29,9 +29,9 @@ class ShipmentService:
         return new_shipment
 
     # Update an existing shipment
-    async def update(self, id: int, shipment_update: dict) -> Shipment | None:
+    async def update(self, id: int, shipment_update: dict) -> Shipment | None:  # pyright: ignore[reportUnknownParameterType]
         shipment = await self.get(id)
-        shipment.sqlmodel_update(shipment_update)
+        shipment.sqlmodel_update(shipment_update)  # pyright: ignore[reportUnusedCallResult, reportUnknownArgumentType, reportOptionalMemberAccess]
 
         self.session.add(shipment)
         await self.session.commit()

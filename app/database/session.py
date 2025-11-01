@@ -15,7 +15,7 @@ engine = create_async_engine(
 
 async def create_db_tables():
     async with engine.begin() as connection:
-        from ..database.models import Shipment  # noqa: F401
+        from ..database.models import Shipment  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
         await connection.run_sync(SQLModel.metadata.create_all)
 

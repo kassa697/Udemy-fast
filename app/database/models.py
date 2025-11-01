@@ -2,7 +2,7 @@ from datetime import datetime
 from enum import Enum
 
 from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel  # pyright: ignore[reportUnknownVariableType]
 
 
 class ShipmentStatus(str, Enum):
@@ -13,7 +13,7 @@ class ShipmentStatus(str, Enum):
 
 
 class Shipment(SQLModel, table=True):
-    __tablename__ = "shipment"
+    __tablename__ = "shipment"  # pyright: ignore[reportAssignmentType, reportUnannotatedClassAttribute]
 
     id: int = Field(default=None, primary_key=True)
     content: str
