@@ -2,6 +2,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from ..core.security import oauth2_scheme
+
 from ..dependencies import SellerServiceDep
 from ..schemas.seller import SellerCreate, SellerRead
 
@@ -24,3 +26,10 @@ async def login_seller(
         "access_token": token,
         "type": "jwt",
     }
+
+
+@router.get("/dashboard")
+async def get_dashboard(
+    service: SellerServiceDep, token: Annotated[str, Depends(oauth2_scheme)]
+):
+    return {"token": token, "message": "Welcome to the dashboard!"}
