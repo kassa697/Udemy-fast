@@ -21,6 +21,17 @@ pip install sqlmodel
 # pydantic-settingsは環境変数から設定を読み込むためのライブラリ
 pip install pydantic-settings
 
+# passlibはパスワードのハッシュ化で使う
+pip install passlib[bcrypt]
+# もしくは""をつける。because ""をつけるとエラーになる
+pip install "passlib[bcrypt]"
+
+# エラーが出るのでバージョン指定する
+pip install bcrypt==4.3.0
+
+# jwt tokenを生成するためのライブラリ
+pip install pyjwt
+
 ```
 
 ## メモ

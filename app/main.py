@@ -1,14 +1,14 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from scalar_fastapi import get_scalar_api_reference
+from scalar_fastapi import get_scalar_api_reference  # pyright: ignore[reportUnknownVariableType]
 
-from .api.router import router
+from .api.router import master_router
 from .database.session import create_db_tables
 
 
 @asynccontextmanager
-async def lifespan_handler(app: FastAPI):
+async def lifespan_handler(app: FastAPI):  # pyright: ignore[reportUnusedParameter]
     await create_db_tables()
     yield
 
@@ -19,7 +19,7 @@ app = FastAPI(
 )
 
 
-app.include_router(router)
+app.include_router(master_router)
 
 
 ### Scalar API Documentation

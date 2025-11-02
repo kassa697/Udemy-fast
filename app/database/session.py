@@ -2,12 +2,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 
-from ..config import settings
+from ..config import db_settings
 
 # Create a database engine to connect with database
 engine = create_async_engine(
     # database type/dialect and file name
-    url=settings.POSTGRES_URL,
+    url=db_settings.POSTGRES_URL,
     # Log sql queries
     echo=True,
 )
@@ -15,17 +15,17 @@ engine = create_async_engine(
 
 async def create_db_tables():
     async with engine.begin() as connection:
-        from ..database.models import Shipment  # noqa: F401
+        from ..database.models import Shipment  # noqa: F401  # pyright: ignore[reportUnusedImport]
 
         await connection.run_sync(SQLModel.metadata.create_all)
 
 
-async def get_session():
-    async_session = sessionmaker(
-        bind=engine,
+async def get_session():  # pyright: ignore[reportUnknownParameterType]
+    async_session = sessionmaker(  # pyright: ignore[reportCallIssue]
+        bind=engine,  # pyright: ignore[reportArgumentType]
         class_=AsyncSession,
         expire_on_commit=False,
     )
 
-    async with async_session() as session:
+    async with async_session() as session:  # pyright: ignore[reportGeneralTypeIssues, reportUnknownVariableType]
         yield session

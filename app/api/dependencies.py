@@ -3,6 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..services.seller import SellerService
+
 from ..database.session import get_session
 from ..services.shipment import ShipmentService
 
@@ -16,8 +18,19 @@ def get_shipment_service(session: SessionDep):
     return ShipmentService(session)
 
 
+# seller service dep
+def get_seller_service(session: SessionDep):
+    return SellerService(session)
+
+
 # Shipment service dep annotation
 ServiceDep = Annotated[
     ShipmentService,
     Depends(get_shipment_service),
+]
+
+# Seller service dep annotation
+SellerServiceDep = Annotated[
+    SellerService,
+    Depends(get_seller_service),
 ]
